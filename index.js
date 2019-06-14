@@ -105,12 +105,12 @@ router.get('/mp3/*', function(req, res, next) {
 		//   // '-c mp3on4'
 		// ])
 		//-map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)"
-		.addOutputOption('-map', '0:0')
-		.addOutputOption('-map', '1:0')
-		.addOutputOption('-c', 'copy')
-		.addOutputOption('-id3v2_version', '3')
-		.addOutputOption('-metadata', 'title="Album cover"')
-		.addOutputOption('-metadata', 'comment="Cover (front)"')
+		// .addOutputOption('-map', '0:0')
+		// .addOutputOption('-map', '1:0')
+		// .addOutputOption('-c', 'copy')
+		// .addOutputOption('-id3v2_version', '3')
+		.addOutputOption('-metadata:s:a', 'title="Album cover"')
+		.addOutputOption('-metadata:s:a', 'comment="Cover (front)"')
 		.audioCodec('libmp3lame')
 		.audioBitrate(320)//@TODO: Make dynamic (user can chose)
 		.format('mp3')//@TODO: Make dynamic (let user chose what he wants)
