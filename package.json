@@ -1,0 +1,23 @@
+{
+  "name": "youtube-downloader",
+  "version": "1.0.0",
+  "description": "Download and convert youtube videos to mp3 in realtime",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "ytdl",
+    "youtube",
+    "download",
+    "mp3"
+  ],
+  "author": "Dmitry Samokhin Ice",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "fluent-ffmpeg": "^2.1.2",
+    "ytdl-core": "^0.26.1"
+  }
+}

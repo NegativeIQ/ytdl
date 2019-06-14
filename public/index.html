@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YouTube mp3 Download</title>
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+
+  <script src="./js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"></script>
+
+  <script type="text/javascript" src="./js/jquery.fileDownload.js"></script>
+
+  <script type="text/javascript">
+  
+    $( document ).ready(function() {
+      console.log( "ready!" );
+      var frm = $('#downloadForm');
+
+      frm.submit(function (e) {
+          console.log( "Requesting url " + "/mp3/" + e.currentTarget['videourl'].value )
+          e.preventDefault();
+
+
+/*
+          $.get( "/mp3/" + e.currentTarget['videourl'].value, function( data ) {
+            $( ".result" ).html( data );
+            //alert( e.currentTarget['videourl'].value );
+          });
+*/
+
+
+
+          $.fileDownload( "/mp3/" + e.currentTarget['videourl'].value, {
+
+          });
+
+
+/*
+          $.getJSON( "/mp3/" + e.currentTarget['videourl'].value , function(result){
+              $.each(result, function(i, field){
+                  $("div#videoinfo").append(field + "<br/>");
+              });
+          });
+*/
+/*
+          $.get( "/info/" + e.currentTarget['videourl'].value, function( data ) {
+            //$( ".result" ).html( data );
+            alert( e.currentTarget['videourl'].value );
+          });
+*/
+
+
+          /*
+          $.ajax({
+              type: frm.attr('method'),
+              url: frm.attr('action'),
+              data: frm.serialize(),
+              success: function (data) {
+                  console.log('Submission was successful.');
+                  console.log(data);
+              },
+              error: function (data) {
+                  console.log('An error occurred.');
+                  console.log(data);
+              },
+          });
+          */
+  
+
+      });
+    });
+  </script>
+  <style type="text/css">
+
+    html,body{
+    	height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #ccc url("./images/background.jpg") no-repeat center center fixed;
+      background-size: 100% 100%;
+    }
+
+    body {
+
+    }
+
+    .inputdiv{
+      /*overflow: auto;*/
+      /*margin: 0 auto;*/
+      display: table-cell;
+      width: 100%;
+      height: 100%;
+      vertical-align: middle;
+      max-width: 860px;
+    }
+
+  	.inputcontainer
+  	{
+  	    display:table-cell;
+  	    text-align:center;
+  	    vertical-align:middle;
+  	}
+
+    .strech {
+      width: 100%;
+      height: 100%;
+    }
+
+    .inputurl {
+      min-width: 420px;
+      max-width: 860px;
+      width: 80%;
+    }
+
+    .parent{
+        display: table;
+    }
+    .child{
+        display: table-cell;
+        vertical-align: middle;
+        padding-left: 20px;
+    }
+
+    button, input, input:focus, .form-control, .form-control:focus  {
+      background: rgba(0,0,0,0.4);
+      color: #A1A1A1;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container strech inputurl parent">
+    <form class="child" id="downloadForm" method="GET">
+      <div class="input-group">
+	      <input autocomplete="off" type="text" name="videourl" class="form-control" placeholder="youtube.com/watch?v=Axt37jhAq98" aria-label="YouTube video url" aria-describedby="button-addon1">
+	      <div class="input-group-append">
+	        <button class="btn btn-secondary" type="submit" id="button-addon1">Download</button>
+	      </div>
+      </div>
+    </form>
+    <div id="videoinfo"></div>
+  </div>
+</body>
+</html>
