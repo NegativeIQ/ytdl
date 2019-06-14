@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 //Do i need FS? I will be uploading directly (caching for later???)
 //var fs     = require('fs');
 var path   = require('path');
-var fs     = require('fs');
+//var fs     = require('fs');
 var ytdl   = require('ytdl-core');
 var ffmpeg = require('fluent-ffmpeg');
 
