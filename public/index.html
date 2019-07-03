@@ -13,13 +13,37 @@
   <script type="text/javascript" src="./js/jquery.fileDownload.js"></script>
 
   <script type="text/javascript">
-  
+ 
     $( document ).ready(function() {
-      console.log( "ready!" );
+      console.log( "Page ready" );
       var frm = $('#downloadForm');
+      var yturl = $('#yturl');
+
+
+      yturl.on("click", function() {
+      	console.log('clicked yturl');
+		    navigator.clipboard.readText()
+		  .then(text => {
+		    console.log('lenght: ', text.length);
+		    if(ytVidId(text) != false || text.length == 11)
+        {
+          console.log('Pasted url: ', text);
+  		    yturl.val(text);
+        }
+		  })
+		  .catch(err => {
+		    console.error('Failed to read clipboard contents: ', err);
+		  });
+      });
+
+
+      function ytVidId(url) {
+        var p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+        return (url.match(p)) ? RegExp.$1 : false;
+      }
 
       frm.submit(function (e) {
-          console.log( "Requesting url " + "/mp3/" + e.currentTarget['videourl'].value )
+          console.log( "Requesting url " + "/mp3/"+ e.currentTarget['bitrate'].value + "/" + e.currentTarget['videourl'].value )
           e.preventDefault();
 
 
@@ -32,10 +56,9 @@
 
 
 
-          $.fileDownload( "/mp3/" + e.currentTarget['videourl'].value, {
+          $.fileDownload( "/mp3/"+ e.currentTarget['bitrate'].value + "/" + e.currentTarget['videourl'].value, {
 
           });
-
 
 /*
           $.getJSON( "/mp3/" + e.currentTarget['videourl'].value , function(result){
@@ -127,7 +150,7 @@
         padding-left: 20px;
     }
 
-    button, input, input:focus, .form-control, .form-control:focus  {
+    button, input, select, option, input:focus, .form-control, .form-control:focus, .custom-select {
       background: rgba(0,0,0,0.4);
       color: #A1A1A1;
     }
@@ -138,8 +161,14 @@
   <div class="container strech inputurl parent">
     <form class="child" id="downloadForm" method="GET">
       <div class="input-group">
-	      <input autocomplete="off" type="text" name="videourl" class="form-control" placeholder="youtube.com/watch?v=Axt37jhAq98" aria-label="YouTube video url" aria-describedby="button-addon1">
-	      <div class="input-group-append">
+	      <input id="yturl" autocomplete="off" type="text" name="videourl" class="form-control" placeholder="youtube.com/watch?v=Axt37jhAq98" aria-label="YouTube video url" aria-describedby="button-addon1">
+	       <select name="bitrate" style="border-left: none;" id="bitrate">
+  	        <!-- <option style="background: rgba(0,0,0,0.9)" selected>NotImplemented</option> -->
+  	        <option value="320" style="background: rgba(0,0,0,0.9)">320kbs</option>
+            <option value="256" style="background: rgba(0,0,0,0.9)">256kbs</option>
+            <option value="128" style="background: rgba(0,0,0,0.9)">128kbs</option>
+          </select>
+          <div class="input-group-append">
 	        <button class="btn btn-secondary" type="submit" id="button-addon1">Download</button>
 	      </div>
       </div>

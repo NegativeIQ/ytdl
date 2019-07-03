@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
 var router = express.Router();
+var sanitize = require("sanitize-filename");
+var contentDisposition = require('content-disposition')
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -62,39 +64,34 @@ router.get('/info/*', function(req, res, next) {
 });
 
 
-router.get('/mp3/*', function(req, res, next) {
-	if (typeof req.query.v == 'undefined') {
-		throw new Error("Invalid youtube link");
-	}
-
+router.get('/mp3/:bitrate/*', function(req, res, next) {
+	var bitrate = 320;
+    if('undefined' != typeof req.params.bitrate && req.params.bitrate) {
+    	bitrate = parseInt(req.params.bitrate);
+    }
 	var videoid = req.query.v;
 	var title = 'download';
-	var testFile = path.join(__dirname, 'songs', 'test.mp3');
-	console.log('Preparing download: \n'+ req.query +'\n\n');
-
-
-
 	var download = ytdl(videoid, { filter: 'audioonly', quality: 'highest' })
 		.on('info', (info, format) => {
-			title = info.title;
+			title = sanitize(info.title);
 			
 			console.log('Download '+ title +' has stated...\n');
-			var size = (((info.length_seconds*320) / 8)*1024);
-
-			//console.log(Buffer.from(title).toString('hex'));
+			var size = (((info.length_seconds*bitrate) / 8)*1024);
 
 			res.setHeader('Content-Length', size.toString());
-			res.append('Set-Cookie', 'fileDownload=true; path=/');
-			res.append("Cache-Control", "no-cache, no-store, must-revalidate");
+			res.setHeader('Set-Cookie', 'fileDownload=true; path=/');
+			res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+			// res.setHeader('Content-Disposition', contentDisposition(title + '.mp3'))
 			res.attachment(title + ".mp3");
+			console.log('Headers set...');
 		})
-		.on('response', (res) => {
+		.on('response', (ytres) => {
 			console.log('Video response from youtube is here\n');
 		})
-	  .on('progress', (chunkLength, downloaded, total) => {
-	  //var floatDownloaded = downloaded / total;
-	  //var downloadedMinutes = (Date.now() - starttime) / 1000 / 60;
-	  });
+		.on('progress', (chunkLength, downloaded, total) => {
+		//var floatDownloaded = downloaded / total;
+		//var downloadedMinutes = (Date.now() - starttime) / 1000 / 60;
+		});
 
 	//ffmpeg('audio.mp4')
 	ffmpeg(download)
@@ -112,10 +109,10 @@ router.get('/mp3/*', function(req, res, next) {
 		.addOutputOption('-metadata:s:a', 'title="Album cover"')
 		.addOutputOption('-metadata:s:a', 'comment="Cover (front)"')
 		.audioCodec('libmp3lame')
-		.audioBitrate(320)//@TODO: Make dynamic (user can chose)
+		.audioBitrate(bitrate)//@TODO: Make dynamic (user can chose)
 		.format('mp3')//@TODO: Make dynamic (let user chose what he wants)
 		.on('error', (err) => {
-			console.error(err);
+			//console.error(err);
 			next(err);
 		})
 		// .on('progress', function(info) {
