@@ -42,8 +42,8 @@ router.get('/info/*', function(req, res, next) {
 		};
 
 
-		console.log('title:', info.title);
-		console.log('duration:', info.lengthSeconds);
+		console.log('title:', info.videoDetails.title);
+		console.log('duration:', info.videoDetails.lengthSeconds);
 		//console.log('rating:', info.avg_rating);
 		console.log('uploaded by:', info.author.name);
 		console.log('thumbnail:', info.thumbnail_url);
@@ -63,7 +63,6 @@ router.get('/info/*', function(req, res, next) {
 	});
 });
 
-
 router.get('/mp3/:bitrate/*', function(req, res, next) {
 	var bitrate = 320;
     if('undefined' != typeof req.params.bitrate && req.params.bitrate) {
@@ -77,6 +76,7 @@ router.get('/mp3/:bitrate/*', function(req, res, next) {
 			title = sanitize(info.videoDetails.title);			
 			console.log('Download '+ title +' has stated...\n');
 			var size = (((info.videoDetails.lengthSeconds*bitrate) / 8)*1024);
+			console.log('Length '+ info.videoDetails.lengthSeconds +' ( Size: ' + size + ')...\n');
 
 			res.setHeader('Content-Length', size.toString());
 			res.setHeader('Set-Cookie', 'fileDownload=true; path=/');
@@ -91,6 +91,9 @@ router.get('/mp3/:bitrate/*', function(req, res, next) {
 		.on('progress', (chunkLength, downloaded, total) => {
 		//var floatDownloaded = downloaded / total;
 		//var downloadedMinutes = (Date.now() - starttime) / 1000 / 60;
+		})
+		.on('error', err => {
+			console.error(err);
 		});
 
 	//ffmpeg('audio.mp4')
