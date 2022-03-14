@@ -73,8 +73,10 @@ router.get('/mp3/:bitrate/*', function(req, res, next) {
 	var title = 'download';
 	var download = ytdl(videoid, { filter: 'audioonly', quality: 'highest' })
 		.on('info', (info, format) => {
-			title = sanitize(info.title);
-			
+			//console.log(info.videoDetails.title);
+			title = sanitize(info.videoDetails.title);
+			//title = 'Test';
+
 			console.log('Download '+ title +' has stated...\n');
 			var size = (((info.length_seconds*bitrate) / 8)*1024);
 
