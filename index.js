@@ -35,7 +35,7 @@ router.get('/info/*', function(req, res, next) {
 
 		videoinfo = {
 			title: info.videoDetails.title,
-			duration: info.videoDetails.length_seconds,
+			duration: info.videoDetails.lengthSeconds,
 			//rating: info.avg_rating,
 			uploaded_by: info.author.name,
 			thumbnail: info.thumbnail_url
@@ -43,7 +43,7 @@ router.get('/info/*', function(req, res, next) {
 
 
 		console.log('title:', info.title);
-		console.log('duration:', info.length_seconds);
+		console.log('duration:', info.lengthSeconds);
 		//console.log('rating:', info.avg_rating);
 		console.log('uploaded by:', info.author.name);
 		console.log('thumbnail:', info.thumbnail_url);
@@ -77,7 +77,7 @@ router.get('/mp3/:bitrate/*', function(req, res, next) {
 			title = sanitize(info.videoDetails.title);
 			
 			console.log('Download '+ title +' has stated...\n');
-			var size = (((info.videoDetails.length_seconds*bitrate) / 8)*1024);
+			var size = (((info.videoDetails.lengthSeconds*bitrate) / 8)*1024);
 
 			res.setHeader('Content-Length', size.toString());
 			res.setHeader('Set-Cookie', 'fileDownload=true; path=/');
