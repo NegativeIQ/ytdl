@@ -8,16 +8,12 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
-//Do i need FS? I will be uploading directly (caching for later???)
-//var fs     = require('fs');
 var path   = require('path');
-//var fs     = require('fs');
 var ytdl   = require('ytdl-core');
 var ffmpeg = require('fluent-ffmpeg');
 
 
-//Serve static content from public folder (for example our vue frontend...)
+//Serve static content from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -28,7 +24,6 @@ router.get('/info/*', function(req, res, next) {
 	if (typeof req.query.v == 'undefined') {
 		throw new Error("Invalid youtube link");
 	}
-	//res.send("Video requested: <pre>" + JSON.stringify(req.query) + "</pre>" + "<hr/><pre>" +  JSON.stringify(req.params) + "</pre>");
 	console.log("Getting info...");
 	ytdl.getInfo(req.query.v, (err, info) => {
 		if (err) throw err;
@@ -36,32 +31,26 @@ router.get('/info/*', function(req, res, next) {
 		videoinfo = {
 			title: info.videoDetails.title,
 			duration: info.videoDetails.lengthSeconds,
-			//rating: info.avg_rating,
+			//rating: info.avg_rating,//Removed by youtube, and i dont need it for now
 			uploaded_by: info.author.name,
 			thumbnail: info.thumbnail_url
 		};
 
-
+		/*
 		console.log('title:', info.videoDetails.title);
 		console.log('duration:', info.videoDetails.lengthSeconds);
-		//console.log('rating:', info.avg_rating);
+		console.log('rating:', info.avg_rating);
 		console.log('uploaded by:', info.author.name);
 		console.log('thumbnail:', info.thumbnail_url);
-
+		*/
 		res.json(videoinfo);
 
 		//@TODO: Add other thumbnails??? (If there is any...)
 		//@TODO: Add story urls (maybe use image from there???)
 
-
-
-/*
-		const json = JSON.stringify(info, null, 2)
-		  .replace(/(ip(?:=|%3D|\/))((?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|[0-9a-f]{1,4}(?:(?::|%3A)[0-9a-f]{1,4}){7})/ig, '$10.0.0.0');
-		res.send('<pre>' + json + '</pre>');
-*/
 	});
 });
+
 
 router.get('/mp3/:bitrate/*', function(req, res, next) {
 	var bitrate = 320;
@@ -99,43 +88,32 @@ router.get('/mp3/:bitrate/*', function(req, res, next) {
 	//ffmpeg('audio.mp4')
 	ffmpeg(download)
 		.addInput(`https://i.ytimg.com/vi/${videoid}/maxresdefault.jpg`)
-		
-		// .inputOptions([
-		//   '-i C:/Users/Ice/Desktop/ytdl/public/images/background.jpg',
-		//   // '-c mp3on4'
-		// ])
-		//-map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)"
-		// .addOutputOption('-map', '0:0')
-		// .addOutputOption('-map', '1:0')
-		// .addOutputOption('-c', 'copy')
-		// .addOutputOption('-id3v2_version', '3')
+	
 		.addOutputOption('-metadata:s:a', 'title="Album cover"')
 		.addOutputOption('-metadata:s:a', 'comment="Cover (front)"')
 		.audioCodec('libmp3lame')
 		.audioBitrate(bitrate)//@TODO: Make dynamic (user can chose)
 		.format('mp3')//@TODO: Make dynamic (let user chose what he wants)
 		.on('error', (err) => {
-			//console.error(err);
+			console.error(err);
 			next(err);
 		})
-		// .on('progress', function(info) {
-		//   console.log('ffmpeg progress ' + info.percent + '%');
-		// })
-		// .on('data', function(chunk) {
-		// 	console.log('ffmpeg just wrote ' + chunk.length + ' bytes');
-		// })
+		/*
+		.on('progress', function(info) {
+		  console.log('ffmpeg progress ' + info.percent + '%');
+		})
+		.on('data', function(chunk) {
+			console.log('ffmpeg just wrote ' + chunk.length + ' bytes');
+		})
+		*/
 		.on('end', () => {
 			console.log('Download " '+ title +' " finished!');
 		})
-		// .saveToFile(testFile);
+		// .saveToFile(testFile);//Dont write to file, pipe it to response (<3 you Node.js !)
 		.pipe(res, {
 		  end: true
 		});
 });
-
-
-
-
 
 
 //User our routes
@@ -150,7 +128,7 @@ app.use((req,res,next)=>{
 });
 
 
-//error handeling from api
+//error handling from api
 app.use((err,req,res,next)=>{
 	const error = app.get('env') === 'development'?err:{};
 	const status = err.status || 500;
